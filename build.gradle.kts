@@ -4,12 +4,13 @@ plugins {
     id("org.jetbrains.gradle.plugin.idea-ext") version "1.0.1"
     kotlin("jvm") version "1.6.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
-//    id("io.papermc.paperweight.userdev") version "1.3.4"   it is nms, which is using Mojang mappings
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
     id("xyz.jpenilla.run-paper") version "1.0.6"
+    id("org.sonarqube") version "3.3"
+    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
+    kotlin("plugin.serialization") version "1.6.10"
 }
 
-group = "com.noticemc"     // need to change
+group = "com.noticemc"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -22,20 +23,30 @@ repositories {
     maven("https://repo.incendo.org/content/repositories/snapshots")
 }
 
-val exposedVersion: String by project
+val exposedVersion = "latest.release"
+val cloudVersion = "latest.release"
 dependencies {
-//    paperDevBundle("1.18.1-R0.1-SNAPSHOT") it is nms, which is using Mojang mappings
-    compileOnly("io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10-RC")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-    implementation("com.github.shynixn.mccoroutine:mccoroutine-bukkit-api:1.5.0")  // it is coroutine libraries for bukkit
-    implementation("com.github.shynixn.mccoroutine:mccoroutine-bukkit-core:1.5.0")
-    implementation("cloud.commandframework:cloud-core:1.6.1")
-    implementation("cloud.commandframework:cloud-kotlin-extensions:1.6.1")
-    implementation("cloud.commandframework:cloud-paper:1.6.1")
-    implementation("cloud.commandframework:cloud-annotations:1.6.1")
-    implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
+    compileOnly("io.papermc.paper", "paper-api", "1.19-R0.1-SNAPSHOT")
+
+    library(kotlin("stdlib"))
+
+    compileOnly("com.github.MilkBowl", "VaultAPI", "1.7")
+
+    implementation("cloud.commandframework", "cloud-core", cloudVersion)
+    implementation("cloud.commandframework", "cloud-kotlin-extensions", cloudVersion)
+    implementation("cloud.commandframework", "cloud-paper", cloudVersion)
+    implementation("cloud.commandframework", "cloud-annotations", cloudVersion)
+    implementation("cloud.commandframework", "cloud-kotlin-coroutines-annotations", cloudVersion)
+    implementation("cloud.commandframework", "cloud-kotlin-coroutines", cloudVersion)
+
+    implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
+    implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
+    implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
+
+    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.6.2")
+
+    implementation("com.github.shynixn.mccoroutine", "mccoroutine-bukkit-api", "2.2.0")
+    implementation("com.github.shynixn.mccoroutine", "mccoroutine-bukkit-core", "2.2.0")
 }
 
 java {
@@ -43,9 +54,6 @@ java {
 }
 
 tasks {
-//    assemble {                           it is nms, which is using Mojang mappings
-//        dependsOn(reobfJar)
-//    }
     compileKotlin {
         kotlinOptions.jvmTarget = "17"
         kotlinOptions.javaParameters = true
@@ -60,7 +68,7 @@ tasks {
 
 tasks {
     runServer {
-        minecraftVersion("1.18.1")
+        minecraftVersion("1.19.1")
     }
 }
 
@@ -72,8 +80,7 @@ bukkit {
 
     main = "com.noticemc.noticetemplate.NoticeTemplate"  // need to change
 
-    apiVersion = "1.18"
-    libraries = listOf("com.github.shynixn.mccoroutine:mccoroutine-bukkit-api:1.5.0",
-        "com.github.shynixn.mccoroutine:mccoroutine-bukkit-core:1.5.0")
-
+    apiVersion = "1.19"
+    libraries = listOf("com.github.shynixn.mccoroutine:mccoroutine-bukkit-api:2.2.0",
+        "com.github.shynixn.mccoroutine:mccoroutine-bukkit-core:2.2.0")
 }
